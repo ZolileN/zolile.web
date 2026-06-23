@@ -19,6 +19,7 @@ export default function TerminalContact() {
   const [input, setInput] = useState('');
   const [msgStep, setMsgStep] = useState<number | null>(null); // null means not in messaging flow. 1: email, 2: message content
   const [senderEmail, setSenderEmail] = useState('');
+  const [isChatActive, setIsChatActive] = useState(false);
   const [channelId] = useState(() => 'ch_' + Math.random().toString(36).substring(2, 10));
   
   const terminalEndRef = useRef<HTMLDivElement | null>(null);
@@ -77,7 +78,37 @@ export default function TerminalContact() {
     const trimmed = cmd.trim();
     const cleanCmd = trimmed.toLowerCase();
     
-    const newHistory = [...history, { text: `visitor@zolile-systems:~$ ${trimmed}`, type: 'input' as const }];
+    let promptPrefix = 'visitor@zolile-systems:~$ ';
+    if (isChatActive) {
+      promptPrefix = 'chat_session:~$ ';
+    } else if (msgStep === 1) {
+      promptPrefix = 'email_daemon:~$ ';
+    } else if (msgStep === 2) {
+      promptPrefix = 'message_daemon:~$ ';
+    }
+
+    const newHistory = [...history, { text: `${promptPrefix}${trimmed}`, type: 'input' as const }];
+
+    if (isChatActive) {
+      if (['exit', 'quit', 'close'].includes(cleanCmd)) {
+        setIsChatActive(false);
+        setSenderEmail('');
+        setHistory([
+          ...newHistory,
+          { text: 'SYSTEM: Live chat connection closed cleanly.', type: 'success' as const },
+          { text: 'Type "help" for available commands.', type: 'output' as const }
+        ]);
+        return;
+      }
+      
+      if (trimmed === '') {
+        setHistory(newHistory);
+        return;
+      }
+
+      await sendChatMessage(trimmed, newHistory);
+      return;
+    }
 
     if (msgStep !== null) {
       await handleMessagingFlow(trimmed, newHistory);
@@ -259,14 +290,17 @@ export default function TerminalContact() {
           setHistory([
             ...progressHistory,
             { text: result.message, type: 'success' as const },
-            { text: 'Thank you. Type "help" for more options.', type: 'output' as const },
+            { text: 'SYSTEM: Live bridge established! Zolile has been notified.', type: 'success' as const },
+            { text: 'Type your message below. Type "exit", "quit", or "close" to exit.', type: 'output' as const },
           ]);
+          setIsChatActive(true);
         } else {
           setHistory([
             ...progressHistory,
             { text: result.message, type: 'error' as const },
             { text: 'Type "message" to try again.', type: 'output' as const },
           ]);
+          setSenderEmail('');
         }
       } catch {
         setHistory([
@@ -274,8 +308,36 @@ export default function TerminalContact() {
           { text: `SYSTEM: Unexpected transmission exception.`, type: 'error' as const },
           { text: 'Type "message" to try again.', type: 'output' as const },
         ]);
+        setSenderEmail('');
       }
-      setSenderEmail('');
+    }
+  };
+
+  const sendChatMessage = async (text: string, currentHistory: TerminalLine[]) => {
+    const progressHistory = [
+      ...currentHistory,
+      { text: 'SYSTEM: Sending message...', type: 'output' as const }
+    ];
+    setHistory(progressHistory);
+
+    try {
+      const result = await sendLiveMessage(senderEmail, text, channelId);
+      if (result.success) {
+        setHistory([
+          ...currentHistory,
+          { text: `Sent: ${text}`, type: 'success' as const }
+        ]);
+      } else {
+        setHistory([
+          ...currentHistory,
+          { text: `SYSTEM: Failed to send - ${result.message}`, type: 'error' as const }
+        ]);
+      }
+    } catch {
+      setHistory([
+        ...currentHistory,
+        { text: 'SYSTEM: Transmission failed.', type: 'error' as const }
+      ]);
     }
   };
 
@@ -324,18 +386,20 @@ export default function TerminalContact() {
       {/* Terminal Input Form */}
       <form onSubmit={handleSubmit} className="border-t border-border-custom bg-[#0C0C0C] p-3 flex items-center">
         <span className="text-accent font-bold mr-2 select-none">
-          {msgStep === 1 
-            ? 'email_daemon:~$ ' 
-            : msgStep === 2 
-              ? 'message_daemon:~$ ' 
-              : 'visitor@zolile-systems:~$ '}
+          {isChatActive
+            ? 'chat_session:~$ '
+            : msgStep === 1 
+              ? 'email_daemon:~$ ' 
+              : msgStep === 2 
+                ? 'message_daemon:~$ ' 
+                : 'visitor@zolile-systems:~$ '}
         </span>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="grow bg-transparent text-white focus:outline-none border-none p-0 h-5"
-          placeholder={msgStep === null ? "Type 'help'..." : ""}
+          placeholder={isChatActive ? "Type message..." : msgStep === null ? "Type 'help'..." : ""}
           autoComplete="off"
           autoFocus
         />
