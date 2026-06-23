@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Code, Database, Server, BrainCircuit, ExternalLink, Terminal } from 'lucide-react';
+import { ArrowRight, Code, Database, Server, BrainCircuit, Terminal } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import HeroArchitecture from '@/components/HeroArchitecture';
