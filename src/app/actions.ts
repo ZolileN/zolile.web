@@ -1,5 +1,12 @@
 'use server';
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 export async function sendLiveMessage(email: string, message: string, channelId: string): Promise<{ success: boolean; message: string }> {
   try {
     const discordWebhook = process.env.DISCORD_WEBHOOK_URL;
@@ -38,19 +45,24 @@ export async function sendLiveMessage(email: string, message: string, channelId:
 
     // 2. Telegram Bot
     if (telegramToken && telegramChatId) {
-      const text = `📬 *New Message from Portfolio*\n\n*From:* \`${email}\`\n\n*Message:*\n${message}\n\n---\n\`[ID: ${channelId}]\``;
+      const escapedEmail = escapeHtml(email);
+      const escapedMsg = escapeHtml(message);
+      const escapedChan = escapeHtml(channelId);
+
+      const text = `📬 <b>New Message from Portfolio</b>\n\n<b>From:</b> <code>${escapedEmail}</code>\n\n<b>Message:</b>\n${escapedMsg}\n\n---\n<code>[ID: ${escapedChan}]</code>`;
       const response = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: telegramChatId,
           text,
-          parse_mode: 'Markdown',
+          parse_mode: 'HTML',
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`Telegram API failed with status ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`Telegram API failed with status ${response.status}: ${errorText}`);
       }
       dispatched = true;
     }

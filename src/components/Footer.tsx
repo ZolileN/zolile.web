@@ -32,7 +32,7 @@ export default function Footer() {
                 </svg>
               </a>
               <a 
-                href="https://linkedin.com" 
+                href="https://www.linkedin.com/in/zolile-nonzapa-95b92140/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="w-9 h-9 rounded-lg bg-surface-card border border-border-custom flex items-center justify-center text-text-secondary hover:text-accent hover:border-accent/40 transition-colors duration-300"

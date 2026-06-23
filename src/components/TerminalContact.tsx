@@ -101,6 +101,7 @@ export default function TerminalContact() {
           { text: '  message    - Send a contact message directly through the terminal', type: 'output' },
           { text: '  chat       - Open a direct WhatsApp chat window', type: 'output' },
           { text: '  whatsapp   - Alias for "chat"', type: 'output' },
+          { text: '  linkedin   - Open professional LinkedIn profile', type: 'output' },
           { text: '  clear      - Clear terminal screen history', type: 'output' },
         ]);
         break;
@@ -144,6 +145,15 @@ export default function TerminalContact() {
           { text: '  Cell     : +27 82 531 9901', type: 'output' },
           { text: '  Location : Cape Town, South Africa', type: 'output' },
           { text: '  GitHub   : https://github.com/zolilen', type: 'output' },
+          { text: '  LinkedIn : https://www.linkedin.com/in/zolile-nonzapa-95b92140/', type: 'output' },
+        ]);
+        break;
+      case 'linkedin':
+        window.open('https://www.linkedin.com/in/zolile-nonzapa-95b92140/', '_blank');
+        setHistory([
+          ...newHistory,
+          { text: 'SYSTEM: Redirecting to LinkedIn profile...', type: 'success' },
+          { text: 'Opening linkedin.com/in/zolile-nonzapa-95b92140/...', type: 'output' },
         ]);
         break;
       case 'chat':
