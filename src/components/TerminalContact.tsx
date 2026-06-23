@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Terminal, Send, ArrowRight } from 'lucide-react';
+import { sendLiveMessage } from '@/app/actions';
 
 interface TerminalLine {
   text: string;
@@ -23,14 +24,14 @@ export default function TerminalContact() {
     terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [history]);
 
-  const handleCommand = (cmd: string) => {
+  const handleCommand = async (cmd: string) => {
     const trimmed = cmd.trim();
     const cleanCmd = trimmed.toLowerCase();
     
     const newHistory = [...history, { text: `visitor@zolile-systems:~$ ${trimmed}`, type: 'input' as const }];
 
     if (msgStep !== null) {
-      handleMessagingFlow(trimmed, newHistory);
+      await handleMessagingFlow(trimmed, newHistory);
       return;
     }
 
@@ -49,6 +50,8 @@ export default function TerminalContact() {
           { text: '  projects   - List flagship systems built by Zolile', type: 'output' },
           { text: '  contact    - Print cell number, location, and email details', type: 'output' },
           { text: '  message    - Send a contact message directly through the terminal', type: 'output' },
+          { text: '  chat       - Open a direct WhatsApp chat window', type: 'output' },
+          { text: '  whatsapp   - Alias for "chat"', type: 'output' },
           { text: '  clear      - Clear terminal screen history', type: 'output' },
         ]);
         break;
@@ -92,6 +95,15 @@ export default function TerminalContact() {
           { text: '  Cell     : +27 82 531 9901', type: 'output' },
           { text: '  Location : Cape Town, South Africa', type: 'output' },
           { text: '  GitHub   : https://github.com/zolilen', type: 'output' },
+        ]);
+        break;
+      case 'chat':
+      case 'whatsapp':
+        window.open('https://wa.me/27825319901?text=Hello%20Zolile,%20I%20saw%20your%20portfolio%20and%20wanted%20to%20chat!', '_blank');
+        setHistory([
+          ...newHistory,
+          { text: 'SYSTEM: Launching WhatsApp click-to-chat window...', type: 'success' },
+          { text: 'Redirecting to wa.me/27825319901...', type: 'output' },
         ]);
         break;
       case 'message':
@@ -142,7 +154,7 @@ export default function TerminalContact() {
     return links[id];
   };
 
-  const handleMessagingFlow = (text: string, currentHistory: TerminalLine[]) => {
+  const handleMessagingFlow = async (text: string, currentHistory: TerminalLine[]) => {
     if (msgStep === 1) {
       // Validate email simple
       if (!text.includes('@') || !text.includes('.')) {
@@ -169,16 +181,41 @@ export default function TerminalContact() {
         setMsgStep(null);
         return;
       }
-      // Send mock request
-      setHistory([
+
+      // Add loading state to history
+      const progressHistory = [
         ...currentHistory,
-        { text: 'SYSTEM: Packaging payload...', type: 'output' },
-        { text: 'SYSTEM: Connecting to gateway...', type: 'output' },
-        { text: `SYSTEM: Dispatching message from <${senderEmail}>...`, type: 'output' },
-        { text: 'SYSTEM: SUCCESS! Your ping was successfully routed to Zolile Nonzapa.', type: 'success' },
-        { text: 'Thank you. Type "help" for more options.', type: 'output' },
-      ]);
+        { text: 'SYSTEM: Packaging payload...', type: 'output' as const },
+        { text: 'SYSTEM: Connecting to gateway...', type: 'output' as const },
+        { text: `SYSTEM: Dispatching message from <${senderEmail}>...`, type: 'output' as const },
+      ];
+      setHistory(progressHistory);
+      
+      // Temporarily clear step and reset input placeholder
       setMsgStep(null);
+
+      try {
+        const result = await sendLiveMessage(senderEmail, text);
+        if (result.success) {
+          setHistory([
+            ...progressHistory,
+            { text: result.message, type: 'success' as const },
+            { text: 'Thank you. Type "help" for more options.', type: 'output' as const },
+          ]);
+        } else {
+          setHistory([
+            ...progressHistory,
+            { text: result.message, type: 'error' as const },
+            { text: 'Type "message" to try again.', type: 'output' as const },
+          ]);
+        }
+      } catch (error) {
+        setHistory([
+          ...progressHistory,
+          { text: `SYSTEM: Unexpected transmission exception.`, type: 'error' as const },
+          { text: 'Type "message" to try again.', type: 'output' as const },
+        ]);
+      }
       setSenderEmail('');
     }
   };
