@@ -23,6 +23,42 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Smooth scroll and clear hash from address bar on mount/navigation
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const element = document.getElementById(hash.substring(1));
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, [pathname]);
+
+  // Intercept all clicks on anchor links starting with '#' to scroll smoothly without updating the URL hash
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a');
+      if (!anchor) return;
+      
+      const href = anchor.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        const targetId = href.substring(1);
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    };
+
+    document.addEventListener('click', handleGlobalClick);
+    return () => document.removeEventListener('click', handleGlobalClick);
+  }, []);
+
   const isHome = pathname === '/';
 
   const navLinks = [
@@ -31,6 +67,18 @@ export default function Navbar() {
     { name: 'Expertise', href: isHome ? '#expertise' : '/#expertise' },
     { name: 'Contact', href: isHome ? '#contact' : '/#contact' },
   ];
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      const targetId = href.substring(1);
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+      setIsOpen(false);
+    }
+  };
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -48,13 +96,14 @@ export default function Navbar() {
             <span className="font-mono text-[10px] text-text-secondary tracking-widest uppercase">Systems Architect</span>
           </div>
         </Link>
-
+ 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => (
             <Link 
               key={link.name} 
               href={link.href} 
+              onClick={(e) => handleLinkClick(e, link.href)}
               className="text-text-secondary hover:text-white transition-colors duration-200 text-sm font-medium tracking-wide"
             >
               {link.name}
@@ -68,7 +117,7 @@ export default function Navbar() {
             <span>Project Console</span>
           </Link>
         </div>
-
+ 
         {/* Mobile menu button */}
         <div className="md:hidden">
           <button 
@@ -80,7 +129,7 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-
+ 
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-bg-secondary border-b border-border-custom py-6 px-6 shadow-2xl animate-fade-in-down">
@@ -89,7 +138,7 @@ export default function Navbar() {
               <Link 
                 key={link.name} 
                 href={link.href} 
-                onClick={() => setIsOpen(false)}
+                onClick={(e) => handleLinkClick(e, link.href)}
                 className="text-text-secondary hover:text-white transition-colors duration-200 text-base font-medium py-2"
               >
                 {link.name}
