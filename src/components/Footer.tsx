@@ -82,7 +82,7 @@ export default function Footer() {
           <p>© {currentYear} Zolile Nonzapa. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a href="https://mlkcomputer.com" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-1 hover:text-accent transition-colors">
-              <span>MLK Computer</span>
+              <span>MLK Computer Consulting</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
             <Link href="/projects" className="flex items-center space-x-1 hover:text-accent transition-colors">
