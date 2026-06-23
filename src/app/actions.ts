@@ -1,5 +1,7 @@
 'use server';
 
+import { neon } from '@neondatabase/serverless';
+
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, '&amp;')
@@ -9,6 +11,7 @@ function escapeHtml(text: string): string {
 
 export async function sendLiveMessage(email: string, message: string, channelId: string): Promise<{ success: boolean; message: string }> {
   try {
+    const dbUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL;
     const discordWebhook = process.env.DISCORD_WEBHOOK_URL;
     const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
     const telegramChatId = process.env.TELEGRAM_CHAT_ID;
@@ -16,6 +19,33 @@ export async function sendLiveMessage(email: string, message: string, channelId:
 
     let dispatchedCount = 0;
     const errors: string[] = [];
+
+    // 0. Database Lead Capture
+    if (dbUrl) {
+      try {
+        const sql = neon(dbUrl);
+        // Ensure table exists
+        await sql`
+          CREATE TABLE IF NOT EXISTS leads (
+            id SERIAL PRIMARY KEY,
+            email VARCHAR(255) NOT NULL,
+            message TEXT,
+            channel_id VARCHAR(100),
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+          )
+        `;
+
+        // Insert lead
+        await sql`
+          INSERT INTO leads (email, message, channel_id)
+          VALUES (${email}, ${message}, ${channelId})
+        `;
+        dispatchedCount++;
+      } catch (err) {
+        console.error('Database lead-capture failed:', err);
+        errors.push(`Database capture failed: ${err instanceof Error ? err.message : 'Unknown'}`);
+      }
+    }
 
     // 1. Discord Webhook
     if (discordWebhook) {
@@ -112,7 +142,7 @@ export async function sendLiveMessage(email: string, message: string, channelId:
       }
     }
 
-    if (dispatchedCount === 0 && (discordWebhook || (telegramToken && telegramChatId) || resendKey)) {
+    if (dispatchedCount === 0 && (discordWebhook || (telegramToken && telegramChatId) || resendKey || dbUrl)) {
       return {
         success: false,
         message: `SYSTEM: Routing error - ${errors.join('; ')}`,
