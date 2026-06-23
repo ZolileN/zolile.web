@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Terminal, Send, ArrowRight } from 'lucide-react';
+import { Terminal, Send } from 'lucide-react';
 import { sendLiveMessage } from '@/app/actions';
+import type Pusher from 'pusher-js';
+import type { Channel } from 'pusher-js';
 
 interface TerminalLine {
   text: string;
@@ -17,8 +19,55 @@ export default function TerminalContact() {
   const [input, setInput] = useState('');
   const [msgStep, setMsgStep] = useState<number | null>(null); // null means not in messaging flow. 1: email, 2: message content
   const [senderEmail, setSenderEmail] = useState('');
+  const [channelId] = useState(() => 'ch_' + Math.random().toString(36).substring(2, 10));
   
   const terminalEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!channelId) return;
+
+    const pusherKey = process.env.NEXT_PUBLIC_PUSHER_KEY;
+    const pusherCluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
+
+    if (!pusherKey || !pusherCluster) {
+      console.warn('Pusher key/cluster not configured. Real-time updates disabled.');
+      return;
+    }
+
+    let isSubscribed = true;
+    let channel: Channel | null = null;
+    let pusherInstance: Pusher | null = null;
+
+    import('pusher-js').then(({ default: Pusher }) => {
+      if (!isSubscribed) return;
+
+      pusherInstance = new Pusher(pusherKey, {
+        cluster: pusherCluster,
+      });
+
+      channel = pusherInstance.subscribe(channelId);
+      
+      channel.bind('reply', (data: { text: string }) => {
+        setHistory((prev) => [
+          ...prev,
+          { text: `zolile@core-systems:~$ ${data.text}`, type: 'success' },
+        ]);
+      });
+    }).catch((err) => {
+      console.error('Failed to load Pusher client:', err);
+    });
+
+    return () => {
+      isSubscribed = false;
+      if (channel) {
+        channel.unbind_all();
+        channel.unsubscribe();
+      }
+      if (pusherInstance) {
+        pusherInstance.disconnect();
+      }
+    };
+  }, [channelId]);
 
   useEffect(() => {
     terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -195,7 +244,7 @@ export default function TerminalContact() {
       setMsgStep(null);
 
       try {
-        const result = await sendLiveMessage(senderEmail, text);
+        const result = await sendLiveMessage(senderEmail, text, channelId);
         if (result.success) {
           setHistory([
             ...progressHistory,
@@ -209,7 +258,7 @@ export default function TerminalContact() {
             { text: 'Type "message" to try again.', type: 'output' as const },
           ]);
         }
-      } catch (error) {
+      } catch {
         setHistory([
           ...progressHistory,
           { text: `SYSTEM: Unexpected transmission exception.`, type: 'error' as const },
@@ -242,7 +291,7 @@ export default function TerminalContact() {
       </div>
 
       {/* Terminal Output Screen */}
-      <div className="p-4 flex-grow overflow-y-auto space-y-2 select-text">
+      <div className="p-4 grow overflow-y-auto space-y-2 select-text">
         {history.map((line, idx) => (
           <div 
             key={idx} 
@@ -275,7 +324,7 @@ export default function TerminalContact() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="flex-grow bg-transparent text-white focus:outline-none border-none p-0 h-5"
+          className="grow bg-transparent text-white focus:outline-none border-none p-0 h-5"
           placeholder={msgStep === null ? "Type 'help'..." : ""}
           autoComplete="off"
           autoFocus

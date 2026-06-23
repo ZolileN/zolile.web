@@ -51,8 +51,8 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-[90vh] pt-32 pb-20 flex items-center overflow-hidden grid-pattern">
         {/* Subtle background glow */}
-        <div className="absolute inset-0 bg-[#050505]" />
-        <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-accent/5 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-bg-primary" />
+        <div className="absolute inset-x-0 top-0 h-64 bg-linear-to-b from-accent/5 to-transparent pointer-events-none" />
         
         <div className="relative max-w-[1200px] mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center z-10">
           <div className="lg:col-span-7 space-y-8">
@@ -63,7 +63,7 @@ export default function Home() {
             
             <h1 className="font-space text-4xl sm:text-5xl lg:text-[56px] font-bold text-white leading-[1.1] tracking-tight">
               Building AI Infrastructure, <br className="hidden sm:inline" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-accent">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-white to-accent">
                 Enterprise Systems
               </span>, and <br className="hidden sm:inline" />
               Digital Products.
@@ -194,7 +194,7 @@ export default function Home() {
         <div className="max-w-[1200px] mx-auto px-6 space-y-12">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2">
-              <span className="font-mono text-[10px] text-accent font-semibold tracking-widest uppercase font-bold">Showcase Architectures</span>
+              <span className="font-mono text-[10px] text-accent tracking-widest uppercase font-bold">Showcase Architectures</span>
               <h2 className="font-space text-3xl font-bold text-white">Flagship Projects</h2>
             </div>
             

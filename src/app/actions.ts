@@ -1,6 +1,6 @@
 'use server';
 
-export async function sendLiveMessage(email: string, message: string): Promise<{ success: boolean; message: string }> {
+export async function sendLiveMessage(email: string, message: string, channelId: string): Promise<{ success: boolean; message: string }> {
   try {
     const discordWebhook = process.env.DISCORD_WEBHOOK_URL;
     const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -22,6 +22,7 @@ export async function sendLiveMessage(email: string, message: string): Promise<{
               fields: [
                 { name: 'From', value: email, inline: true },
                 { name: 'Message', value: message },
+                { name: 'Channel ID', value: channelId, inline: true },
               ],
               timestamp: new Date().toISOString(),
             },
@@ -37,7 +38,7 @@ export async function sendLiveMessage(email: string, message: string): Promise<{
 
     // 2. Telegram Bot
     if (telegramToken && telegramChatId) {
-      const text = `📬 *New Message from Portfolio*\n\n*From:* \`${email}\`\n\n*Message:*\n${message}`;
+      const text = `📬 *New Message from Portfolio*\n\n*From:* \`${email}\`\n\n*Message:*\n${message}\n\n---\n\`[ID: ${channelId}]\``;
       const response = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
