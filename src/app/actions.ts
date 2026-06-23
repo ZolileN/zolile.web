@@ -14,84 +14,112 @@ export async function sendLiveMessage(email: string, message: string, channelId:
     const telegramChatId = process.env.TELEGRAM_CHAT_ID;
     const resendKey = process.env.RESEND_API_KEY;
 
-    let dispatched = false;
+    let dispatchedCount = 0;
+    const errors: string[] = [];
 
     // 1. Discord Webhook
     if (discordWebhook) {
-      const response = await fetch(discordWebhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          embeds: [
-            {
-              title: 'New Message from Zolile Portfolio',
-              color: 3407718, // Accent Green (#00E5A8) in decimal
-              fields: [
-                { name: 'From', value: email, inline: true },
-                { name: 'Message', value: message },
-                { name: 'Channel ID', value: channelId, inline: true },
-              ],
-              timestamp: new Date().toISOString(),
-            },
-          ],
-        }),
-      });
+      try {
+        const response = await fetch(discordWebhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            embeds: [
+              {
+                title: 'New Message from Zolile Portfolio',
+                color: 3407718, // Accent Green (#00E5A8) in decimal
+                fields: [
+                  { name: 'From', value: email, inline: true },
+                  { name: 'Message', value: message },
+                  { name: 'Channel ID', value: channelId, inline: true },
+                ],
+                timestamp: new Date().toISOString(),
+              },
+            ],
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`Discord Webhook failed with status ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`Discord status ${response.status}`);
+        }
+        dispatchedCount++;
+      } catch (err) {
+        console.error('Discord Webhook failed:', err);
+        errors.push(`Discord Webhook failed: ${err instanceof Error ? err.message : 'Unknown'}`);
       }
-      dispatched = true;
     }
 
     // 2. Telegram Bot
     if (telegramToken && telegramChatId) {
-      const escapedEmail = escapeHtml(email);
-      const escapedMsg = escapeHtml(message);
-      const escapedChan = escapeHtml(channelId);
+      try {
+        const escapedEmail = escapeHtml(email);
+        const escapedMsg = escapeHtml(message);
+        const escapedChan = escapeHtml(channelId);
 
-      const text = `📬 <b>New Message from Portfolio</b>\n\n<b>From:</b> <code>${escapedEmail}</code>\n\n<b>Message:</b>\n${escapedMsg}\n\n---\n<code>[ID: ${escapedChan}]</code>`;
-      const response = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: telegramChatId,
-          text,
-          parse_mode: 'HTML',
-        }),
-      });
+        const text = `📬 <b>New Message from Portfolio</b>\n\n<b>From:</b> <code>${escapedEmail}</code>\n\n<b>Message:</b>\n${escapedMsg}\n\n---\n<code>[ID: ${escapedChan}]</code>`;
+        const response = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: telegramChatId,
+            text,
+            parse_mode: 'HTML',
+          }),
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Telegram API failed with status ${response.status}: ${errorText}`);
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText);
+        }
+        dispatchedCount++;
+      } catch (err) {
+        console.error('Telegram dispatch failed:', err);
+        let msg = err instanceof Error ? err.message : 'Unknown';
+        try {
+          const parsed = JSON.parse(msg);
+          if (parsed.description) msg = parsed.description;
+        } catch {}
+        errors.push(`Telegram failed (${msg})`);
       }
-      dispatched = true;
     }
 
     // 3. Resend Email
     if (resendKey) {
-      const fromEmail = process.env.RESEND_FROM || 'onboarding@resend.dev';
-      const toEmail = process.env.RESEND_TO || 'zolile@mlkcomputer.com';
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${resendKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: fromEmail,
-          to: toEmail,
-          subject: `Portfolio Message from ${email}`,
-          html: `<p><strong>From:</strong> ${email}</p><p><strong>Message:</strong></p><p>${message.replace(/\n/g, '<br/>')}</p>`,
-        }),
-      });
+      try {
+        const fromEmail = process.env.RESEND_FROM || 'onboarding@resend.dev';
+        const toEmail = process.env.RESEND_TO || 'zolile@mlkcomputer.com';
+        const response = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: fromEmail,
+            to: toEmail,
+            subject: `Portfolio Message from ${email}`,
+            html: `<p><strong>From:</strong> ${email}</p><p><strong>Message:</strong></p><p>${message.replace(/\n/g, '<br/>')}</p>`,
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`Resend API failed with status ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`Resend failed with status ${response.status}`);
+        }
+        dispatchedCount++;
+      } catch (err) {
+        console.error('Resend dispatch failed:', err);
+        errors.push(`Resend failed: ${err instanceof Error ? err.message : 'Unknown'}`);
       }
-      dispatched = true;
     }
 
-    if (!dispatched) {
+    if (dispatchedCount === 0 && (discordWebhook || (telegramToken && telegramChatId) || resendKey)) {
+      return {
+        success: false,
+        message: `SYSTEM: Routing error - ${errors.join('; ')}`,
+      };
+    }
+
+    if (dispatchedCount === 0) {
       console.log('--- LIVE MESSAGE SIMULATION ---');
       console.log(`From: ${email}`);
       console.log(`Message: ${message}`);
@@ -99,6 +127,13 @@ export async function sendLiveMessage(email: string, message: string, channelId:
       return {
         success: true,
         message: 'SYSTEM: Message simulation succeeded (no production API keys configured).',
+      };
+    }
+
+    if (errors.length > 0) {
+      return {
+        success: true,
+        message: `SYSTEM: WARNING - Routed successfully but with errors: ${errors.join(', ')}`,
       };
     }
 

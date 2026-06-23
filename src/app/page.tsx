@@ -280,35 +280,17 @@ export default function Home() {
 
       {/* Contact Section */}
       <section id="contact" className="border-t border-border-custom py-28 bg-[#070707] grid-pattern">
-        <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-          <div className="lg:col-span-6 space-y-6">
-            <div className="space-y-2">
-              <span className="font-mono text-[10px] text-accent font-semibold tracking-widest uppercase">Establish Communication</span>
-              <h2 className="font-space text-3xl sm:text-4xl font-bold text-white">Let&apos;s Build Something Useful.</h2>
-            </div>
-            
-            <p className="text-text-secondary text-sm sm:text-base leading-relaxed font-sans max-w-lg">
+        <div className="max-w-[800px] mx-auto px-6 space-y-12 text-center">
+          <div className="space-y-4 max-w-2xl mx-auto">
+            <span className="font-mono text-[10px] text-accent tracking-widest uppercase font-bold">Establish Communication</span>
+            <h2 className="font-space text-3xl sm:text-4xl font-bold text-white">Let&apos;s Build Something Useful.</h2>
+            <p className="text-text-secondary text-sm sm:text-base leading-relaxed font-sans max-w-lg mx-auto">
               Whether you&apos;re building a startup, modernizing operations, exploring AI adoption, 
               or creating a new digital product, I&apos;m always interested in ambitious projects. Let&apos;s map your complexity into code.
             </p>
-
-            <div className="space-y-4 pt-4">
-              <div className="flex items-center space-x-3">
-                <span className="font-mono text-[10px] text-accent font-bold uppercase w-20">Location:</span>
-                <span className="text-sm text-text-secondary">Cape Town, South Africa</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <span className="font-mono text-[10px] text-accent font-bold uppercase w-20">Email:</span>
-                <a href="mailto:zolile@mlkcomputer.com" className="text-sm text-white hover:underline">zolile@mlkcomputer.com</a>
-              </div>
-              <div className="flex items-center space-x-3">
-                <span className="font-mono text-[10px] text-accent font-bold uppercase w-20">Cell:</span>
-                <a href="tel:+27825319901" className="text-sm text-white hover:underline">+27 82 531 9901</a>
-              </div>
-            </div>
           </div>
           
-          <div className="lg:col-span-6 w-full">
+          <div className="w-full text-left">
             <TerminalContact />
           </div>
         </div>
