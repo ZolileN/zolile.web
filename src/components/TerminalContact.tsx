@@ -385,20 +385,25 @@ export default function TerminalContact() {
 
       {/* Terminal Input Form */}
       <form onSubmit={handleSubmit} className="border-t border-border-custom bg-[#0C0C0C] p-3 flex items-center">
-        <span className="text-accent font-bold mr-2 select-none">
+        <span className="text-accent font-bold mr-2 select-none whitespace-nowrap shrink-0">
           {isChatActive
             ? 'chat_session:~$ '
             : msgStep === 1 
               ? 'email_daemon:~$ ' 
               : msgStep === 2 
                 ? 'message_daemon:~$ ' 
-                : 'visitor@zolile-systems:~$ '}
+                : (
+                  <>
+                    <span className="hidden sm:inline">visitor@</span>
+                    <span>zolile-systems:~$ </span>
+                  </>
+                )}
         </span>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="grow bg-transparent text-white focus:outline-none border-none p-0 h-5"
+          className="grow min-w-0 bg-transparent text-white focus:outline-none border-none p-0 h-5"
           placeholder={isChatActive ? "Type message..." : msgStep === null ? "Type 'help'..." : ""}
           autoComplete="off"
           autoFocus
