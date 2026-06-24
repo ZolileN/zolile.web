@@ -30,11 +30,11 @@ export const projects: Project[] = [
     id: 'mintry-finops',
     name: 'Mintry Fabric FinOps',
     category: 'AI Infrastructure',
-    description: 'The dedicated control plane and financial operations dashboard for the Mintry proxy architecture.',
+    description: 'A zero-touch TLS proxy that intercepts and caches expensive third-party financial API calls — credit bureau checks, KYC, AML screening — so FinTech microservices stop paying for duplicate vendor queries.',
     features: [
-      'Tracks aggregate capital saved (ZAR) via localized caching',
-      'Visualizes request volume trends',
-      'Displays real-time cache hit rates to optimize microservice API costs'
+      'Transparent MITM interception with no code changes required',
+      'AES-256 (SQLCipher) encrypted caching with hot-reloadable TTL policies per vendor',
+      'Circuit-breaker fallback keeps traffic flowing if the cache layer fails'
     ],
     tech: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'FastAPI', 'PostgreSQL'],
     liveLink: 'https://mintry-finops-web.vercel.app/',
@@ -76,12 +76,11 @@ export const projects: Project[] = [
     id: 'voltadvance',
     name: 'VoltAdvance',
     category: 'Financial Technology',
-    description: 'A commercial utility advance ledger and recovery engine designed to monitor capital exposure and outstanding balances.',
+    description: 'Emergency prepaid electricity advances delivered entirely over WhatsApp, with debt anchored to the meter — not the customer — and recovered automatically the next time electricity is purchased, at any vendor.',
     features: [
-      'Visualizes 30-day rolling advance vs. recovery trends',
-      'Borrower risk tier distributions',
-      'Automated collection channel performance (Capitec, FNB, Shoprite, Boxer)',
-      'Flags high-risk fraud alerts'
+      'Advance requested, approved, and issued as a real token via WhatsApp, no app or account needed',
+      'Risk engine scores repayment behavior at the meter level, not via credit bureau',
+      'Recovery is channel-agnostic — works across Capitec, FNB, Shoprite, Boxer, and more'
     ],
     tech: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'FastAPI', 'MongoDB'],
     liveLink: 'https://voltadvance.vercel.app/',
