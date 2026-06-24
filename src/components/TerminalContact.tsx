@@ -133,6 +133,7 @@ export default function TerminalContact() {
           { text: '  chat       - Open a direct WhatsApp chat window', type: 'output' },
           { text: '  whatsapp   - Alias for "chat"', type: 'output' },
           { text: '  linkedin   - Open professional LinkedIn profile', type: 'output' },
+          { text: '  github     - Open GitHub code repositories', type: 'output' },
           { text: '  clear      - Clear terminal screen history', type: 'output' },
         ]);
         break;
@@ -185,6 +186,14 @@ export default function TerminalContact() {
           ...newHistory,
           { text: 'SYSTEM: Redirecting to LinkedIn profile...', type: 'success' },
           { text: 'Opening linkedin.com/in/zolile-nonzapa-95b92140/...', type: 'output' },
+        ]);
+        break;
+      case 'github':
+        window.open('https://github.com/zolilen', '_blank');
+        setHistory([
+          ...newHistory,
+          { text: 'SYSTEM: Redirecting to GitHub profile...', type: 'success' },
+          { text: 'Opening github.com/zolilen...', type: 'output' },
         ]);
         break;
       case 'chat':
