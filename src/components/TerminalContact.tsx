@@ -364,22 +364,32 @@ export default function TerminalContact() {
 
       {/* Terminal Output Screen */}
       <div className="p-4 grow overflow-y-auto space-y-2 select-text">
-        {history.map((line, idx) => (
-          <div 
-            key={idx} 
-            className={`leading-relaxed whitespace-pre-wrap ${
-              line.type === 'input' 
-                ? 'text-white font-medium' 
-                : line.type === 'error'
-                  ? 'text-red-400 font-semibold'
-                  : line.type === 'success'
-                    ? 'text-accent font-semibold'
-                    : 'text-text-secondary'
-            }`}
-          >
-            {line.text}
-          </div>
-        ))}
+        {history.map((line, idx) => {
+          const match = line.text.match(/^(  .*?(?:-|:))(.*)$/);
+          return (
+            <div 
+              key={idx} 
+              className={`leading-relaxed ${
+                line.type === 'input' 
+                  ? 'text-white font-medium' 
+                  : line.type === 'error'
+                    ? 'text-red-400 font-semibold'
+                    : line.type === 'success'
+                      ? 'text-accent font-semibold'
+                      : 'text-text-secondary'
+              }`}
+            >
+              {match && line.type === 'output' ? (
+                <div className="flex sm:flex-row flex-col">
+                  <span className="shrink-0 whitespace-pre">{match[1]}</span>
+                  <span className="sm:pl-0 pl-4 whitespace-pre-wrap">{match[2]}</span>
+                </div>
+              ) : (
+                <div className="whitespace-pre-wrap">{line.text}</div>
+              )}
+            </div>
+          );
+        })}
         <div ref={terminalEndRef} />
       </div>
 
