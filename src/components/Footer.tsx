@@ -17,11 +17,11 @@ export default function Footer() {
               <span className="font-space font-bold tracking-tight text-white text-lg">ZOLILE NONZAPA</span>
             </Link>
             <p className="text-text-secondary text-sm max-w-sm leading-relaxed">
-              Designing, building, and deploying the core systems and AI infrastructure that businesses depend on. Based in Cape Town, South Africa.
+              Zolile Nonzapa (Zolile Nonzaba) — designing, building, and deploying the core systems and AI infrastructure that businesses depend on. Based in Cape Town, South Africa.
             </p>
             <div className="flex space-x-4 pt-2">
               <a 
-                href="https://github.com/zolilen" 
+                href="https://github.com/ZolileN" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="w-9 h-9 rounded-lg bg-surface-card border border-border-custom flex items-center justify-center text-text-secondary hover:text-accent hover:border-accent/40 transition-colors duration-300"
