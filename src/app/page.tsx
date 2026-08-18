@@ -62,16 +62,24 @@ export default function Home() {
             </div>
             
             <h1 className="font-space text-4xl sm:text-5xl lg:text-[56px] font-bold text-white leading-[1.1] tracking-tight">
-              Building AI Infrastructure, <br className="hidden sm:inline" />
+              Zolile Nonzapa
+            </h1>
+
+            <p className="font-space text-2xl sm:text-3xl lg:text-4xl font-bold text-white/90 leading-[1.15] tracking-tight">
+              Building AI Infrastructure,{" "}
               <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-white to-accent">
                 Enterprise Systems
-              </span>, and <br className="hidden sm:inline" />
-              Digital Products.
-            </h1>
+              </span>
+              , and Digital Products.
+            </p>
+
+            <p className="text-text-secondary text-sm sm:text-base font-mono tracking-wide">
+              Also known as Zolile Nonzaba · Technical Founder &amp; Systems Architect · Cape Town, South Africa
+            </p>
             
             <p className="text-text-secondary text-base sm:text-lg max-w-xl leading-relaxed font-sans">
-              Technical Founder and Full-Stack Engineer focused on high-performance telemetry, 
-              local client-side browser intelligence, enterprise compliance tools, and secure fintech ledgers.
+              Full-Stack Engineer focused on high-performance telemetry, local client-side browser intelligence, 
+              enterprise compliance tools, and secure fintech ledgers.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 pt-2">
@@ -139,8 +147,10 @@ export default function Home() {
           
           <div className="space-y-4 text-text-secondary text-sm sm:text-base leading-relaxed font-sans">
             <p>
-              I design, build, and deploy the systems organizations depend on when spreadsheets, 
-              disconnected software, and manual processes stop scaling.
+              I&apos;m <strong>Zolile Nonzapa</strong> — also known as <strong>Zolile Nonzaba</strong> — 
+              a Technical Founder and Systems Architect based in Cape Town, South Africa. I design, build, 
+              and deploy the systems organizations depend on when spreadsheets, disconnected software, 
+              and manual processes stop scaling.
             </p>
             <p>
               Over the past several years I have developed AI infrastructure platforms, enterprise operating 

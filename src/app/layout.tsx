@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import JsonLd from "@/components/JsonLd";
+import { absoluteUrl, siteConfig } from "@/lib/seo";
 import "./globals.css";
 
 const inter = Inter({
@@ -25,31 +27,55 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Zolile Nonzapa | Technical Founder & AI Infrastructure Engineer",
-  description: "I design, build, and deploy high-performance systems: AI infrastructure, enterprise operating systems, fintech advanced ledgers, and data analytics dashboards.",
-  keywords: [
-    "Zolile Nonzapa",
-    "Technical Founder",
-    "Systems Architect",
-    "AI Infrastructure",
-    "Full-Stack Engineer",
-    "Mintry Fabric",
-    "PraxisOne",
-    "Cape Town Developer",
-    "South Africa Tech Founder"
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.title,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  keywords: [...siteConfig.keywords],
+  authors: [
+    { name: siteConfig.name, url: siteConfig.url },
+    { name: siteConfig.alternateName, url: siteConfig.url },
   ],
-  authors: [{ name: "Zolile Nonzapa", url: "https://mlkcomputer.com" }],
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
-    title: "Zolile Nonzapa | Technical Founder & Systems Architect",
-    description: "Building AI Infrastructure, Enterprise Systems, and Digital Products.",
-    type: "website",
-    locale: "en_ZA",
+    title: siteConfig.title,
+    description: siteConfig.shortDescription,
+    type: "profile",
+    locale: siteConfig.locale,
+    url: siteConfig.url,
+    siteName: `${siteConfig.name} — Portfolio`,
+    images: [
+      {
+        url: absoluteUrl(siteConfig.image),
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.name}, ${siteConfig.jobTitle}`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Zolile Nonzapa | Technical Founder",
-    description: "Building AI Infrastructure, Enterprise Systems, and Digital Products.",
-  }
+    title: siteConfig.title,
+    description: siteConfig.shortDescription,
+    images: [absoluteUrl(siteConfig.image)],
+  },
+  category: "technology",
 };
 
 export default function RootLayout({
@@ -63,6 +89,7 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-bg-primary text-white flex flex-col font-sans">
+        <JsonLd />
         {children}
         <Analytics />
       </body>
