@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Code, Database, Server, BrainCircuit, Terminal } from 'lucide-react';
 import Navbar from '@/components/Navbar';
@@ -8,6 +9,7 @@ import MetricCounter from '@/components/MetricCounter';
 import ProjectCard from '@/components/ProjectCard';
 import TerminalContact from '@/components/TerminalContact';
 import { projects } from '@/data/projects';
+import { siteConfig } from '@/lib/seo';
 
 export default function Home() {
   // Extract the top 6 featured flagship projects
@@ -173,6 +175,24 @@ export default function Home() {
             <span>Foundry Profile</span>
             <span className="font-mono text-[10px] text-accent font-normal">SYS_V2.6</span>
           </h3>
+
+          <div className="flex items-center gap-4 pb-2">
+            <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-border-custom shrink-0">
+              <Image
+                src={siteConfig.image}
+                alt={`${siteConfig.name}, ${siteConfig.jobTitle}`}
+                fill
+                className="object-cover object-top"
+                sizes="80px"
+                priority
+              />
+            </div>
+            <div className="space-y-1">
+              <p className="font-space text-white font-bold">{siteConfig.name}</p>
+              <p className="font-mono text-[10px] text-text-secondary">aka {siteConfig.alternateName}</p>
+              <p className="text-xs text-accent">{siteConfig.jobTitle}</p>
+            </div>
+          </div>
           
           <ul className="space-y-4 font-mono text-xs text-text-secondary">
             <li className="flex justify-between py-1 border-b border-border-custom/30">
