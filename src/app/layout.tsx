@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import JsonLd from "@/components/JsonLd";
-import { absoluteUrl, siteConfig } from "@/lib/seo";
+import { absoluteUrl, getSearchEngineVerification, siteConfig } from "@/lib/seo";
 import "./globals.css";
 
 const inter = Inter({
@@ -76,6 +76,7 @@ export const metadata: Metadata = {
     images: [absoluteUrl(siteConfig.image)],
   },
   category: "technology",
+  verification: getSearchEngineVerification(),
 };
 
 export default function RootLayout({

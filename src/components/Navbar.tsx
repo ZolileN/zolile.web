@@ -62,7 +62,7 @@ export default function Navbar() {
   const isHome = pathname === '/';
 
   const navLinks = [
-    { name: 'About', href: isHome ? '#about' : '/#about' },
+    { name: 'About', href: '/zolile-nonzapa' },
     { name: 'Featured', href: isHome ? '#featured' : '/#featured' },
     { name: 'Expertise', href: isHome ? '#expertise' : '/#expertise' },
     { name: 'Contact', href: isHome ? '#contact' : '/#contact' },

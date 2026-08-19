@@ -89,6 +89,10 @@ export default function Footer() {
               <span>System Index</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
+            <Link href="/zolile-nonzapa" className="flex items-center space-x-1 hover:text-accent transition-colors">
+              <span>Profile</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
       </div>
