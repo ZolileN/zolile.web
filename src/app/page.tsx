@@ -167,6 +167,11 @@ export default function Home() {
               Today I continue building products at the intersection of AI infrastructure, enterprise technology, 
               analytics, and operational intelligence while exploring how software can become a force multiplier for organizations of every size.
             </p>
+            <p>
+              <Link href="/zolile-nonzapa" className="text-accent hover:underline font-medium">
+                Read the full profile of Zolile Nonzapa →
+              </Link>
+            </p>
           </div>
         </div>
         

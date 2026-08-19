@@ -1,0 +1,26 @@
+# Zolile Nonzapa — Portfolio
+
+> Zolile Nonzapa (also known as Zolile Nonzaba) is a Technical Founder and Systems Architect based in Cape Town, South Africa.
+
+## About
+
+- Name: Zolile Nonzapa
+- Alternate name: Zolile Nonzaba
+- Role: Technical Founder & Systems Architect
+- Location: Cape Town, South Africa
+- Email: zolile@mlkcomputer.com
+- Company: MLK Computer Consulting (founder, est. 2012)
+- Products founded: Mintry Fabric, PraxisOne
+
+## Pages
+
+- Home: https://dev.mlkcomputer.com/
+- Profile: https://dev.mlkcomputer.com/zolile-nonzapa
+- Projects: https://dev.mlkcomputer.com/projects
+
+## Links
+
+- GitHub: https://github.com/ZolileN
+- LinkedIn: https://www.linkedin.com/in/zolile-nonzapa-95b92140/
+- MLK Computer: https://mlkcomputer.com
+- Cal.com: https://cal.com/zolile-nonzaba

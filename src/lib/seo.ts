@@ -1,3 +1,5 @@
+export const INDEXNOW_KEY = "7f3a9c2e1b8d4f6a";
+
 export const siteConfig = {
   name: "Zolile Nonzapa",
   alternateName: "Zolile Nonzaba",
@@ -51,16 +53,28 @@ export function absoluteUrl(path = ""): string {
   return `${base}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+export const indexablePaths = ["/", "/zolile-nonzapa", "/projects"] as const;
+
 export function personJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Person",
     name: siteConfig.name,
     alternateName: siteConfig.alternateName,
-    url: siteConfig.url,
+    url: absoluteUrl("/zolile-nonzapa"),
+    mainEntityOfPage: absoluteUrl("/zolile-nonzapa"),
     image: absoluteUrl(siteConfig.image),
     jobTitle: siteConfig.jobTitle,
     description: siteConfig.description,
+    knowsAbout: [
+      "AI Infrastructure",
+      "Enterprise Systems",
+      "Financial Technology",
+      "Full-Stack Development",
+      "Systems Architecture",
+      "AWS AI",
+      "Data Analytics",
+    ],
     worksFor: {
       "@type": "Organization",
       name: siteConfig.worksFor.name,
@@ -101,17 +115,30 @@ export function websiteJsonLd() {
 }
 
 export function profilePageJsonLd() {
+  const profileUrl = absoluteUrl("/zolile-nonzapa");
   return {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
     name: siteConfig.title,
-    url: siteConfig.url,
+    url: profileUrl,
     description: siteConfig.description,
     mainEntity: {
       "@type": "Person",
       name: siteConfig.name,
       alternateName: siteConfig.alternateName,
-      url: siteConfig.url,
+      url: profileUrl,
+      image: absoluteUrl(siteConfig.image),
+      jobTitle: siteConfig.jobTitle,
     },
+  };
+}
+
+export function getSearchEngineVerification() {
+  const google = process.env.GOOGLE_SITE_VERIFICATION;
+  const bing = process.env.BING_SITE_VERIFICATION;
+
+  return {
+    ...(google ? { google } : {}),
+    ...(bing ? { other: { "msvalidate.01": bing } } : {}),
   };
 }
